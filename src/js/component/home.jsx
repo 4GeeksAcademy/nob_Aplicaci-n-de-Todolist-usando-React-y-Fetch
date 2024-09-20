@@ -36,6 +36,20 @@ const TodoList = () => {
       e.preventDefault();
       setTasks([...tasks, name]); // Agrega la tarea actual
       setName(""); // Limpia el input
+      const newTodo = {label: name, is_done: false}
+
+      fetch(`https://playground.4geeks.com/todo/todos/estudiar`, {
+        method: 'POST',
+				body: JSON.stringify(newTodo),
+				headers: {
+					"Content-type": "application/json"
+        }
+				})
+        .then (() => {
+					setTasks([...tasks, newTodo]);
+					setName('');
+				})
+
     }
   };
 
