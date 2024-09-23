@@ -34,7 +34,7 @@ const TodoList = () => {
       const newTodo = { label: name, is_done: false };
 
       fetch(apiUrlPost, {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify(newTodo),
         headers: {
           "Content-type": "application/json",
@@ -48,15 +48,61 @@ const TodoList = () => {
     }
   };
 
-  const deleteTask = (index) => {
-    const newTasks = tasks.filter((_, i) => i !== index);
-    setTasks(newTasks);
-  };
+  const deletePost = (id) => {
+    const apiUrlDeletePost = `https://playground.4geeks.com/todo/todos/${id}`
+    fetch(apiUrlDeletePost, {
+      method: 'DELETE',
+    }).then(() => {
+      setTasks(tasks.filter((todo) => todo.id !== id))
+    })
+  }
+
+  // const deleteTask = (index) => {
+  //   const newTasks = tasks.filter((_, i) => i !== index);
+  //   setTasks(newTasks);
+  // };
+
 
   //Funcion para borrar todas las tareas
+  // const deleteAllTasks = () => {
+  //   //  setTasks([]);
+  //   fetch(apiUrlGet, {
+  //     method: 'PUT', 
+  //     body: JSON.stringify([]),
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     }
+  //   })
+  //   .then((res) => {
+  //     if(res.ok){
+  //       setTasks([]);
+  //     }else{
+  //       console.log("Error deletting all tasks from teh API");
+  //     }
+  //   })
+  //   .catch((error) => console.log("Request failed ", error));
+  // };
+
   const deleteAllTasks = () => {
-    setTasks([]);
+    fetch(apiUrlGet, {
+      method: 'PUT', // PUT para sobrescribir las tareas
+      body: JSON.stringify([]), // Enviar un array vacío para borrar todas las tareas
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+      .then((res) => {
+        if (res.ok) {
+          setTasks([]); // Limpiar las tareas en el estado local si la respuesta es exitosa
+          console.log("All tasks successfully deleted from the API");
+        } else {
+          console.log("Error deleting all tasks from the API", res.status, res.statusText);
+        }
+      })
+      .catch((error) => console.log("Request failed:", error));
   };
+  
+  
 
   
 
@@ -77,20 +123,20 @@ const TodoList = () => {
           </div>
         </div>
         <ul className="list-group w-95 pt-2 mt-4">
-          {tasks.map((task, index) => (
+          {tasks.map((todo,index) => (
             <li
-              key={index}
+              key={todo.id}
               className="list-group-item d-flex justify-content-between align-items-center w-100 pt-2"
             >
               <input
                 type="text"
-                value={task.label}
+                value={todo.label}
                 onChange={(e) => changeInput(e, index)}
                 className="form-control w-100 pt-2"
                 placeholder="Write your homework"
               />
               <button
-                onClick={() => deleteTask(index)}
+                onClick={() => deletePost(todo.id)}
                 className="btn btn-white m-2"
               >
                 x
