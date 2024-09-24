@@ -31,17 +31,19 @@ const TodoList = () => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && name.trim() !== "") {
       e.preventDefault();
+      
       const newTodo = { label: name, is_done: false };
 
       fetch(apiUrlPost, {
-        method: "PUT",
+        method: "POST",
         body: JSON.stringify(newTodo),
         headers: {
           "Content-type": "application/json",
         },
       })
-        .then(() => {
-          setTasks([...tasks, newTodo]); // Agrega la nueva tarea al estado
+      .then((res) => res.json()) // Espera una respuesta en JSON
+      .then((data) => {
+        setTasks([...tasks, data]); ; // Agrega la nueva tarea al estado
           setName(""); // Limpia el input
         })
         .catch((error) => console.log("Error adding todo: ", error));
@@ -57,55 +59,7 @@ const TodoList = () => {
     })
   }
 
-  // const deleteTask = (index) => {
-  //   const newTasks = tasks.filter((_, i) => i !== index);
-  //   setTasks(newTasks);
-  // };
-
-
-  //Funcion para borrar todas las tareas
-  // const deleteAllTasks = () => {
-  //   //  setTasks([]);
-  //   fetch(apiUrlGet, {
-  //     method: 'PUT', 
-  //     body: JSON.stringify([]),
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     }
-  //   })
-  //   .then((res) => {
-  //     if(res.ok){
-  //       setTasks([]);
-  //     }else{
-  //       console.log("Error deletting all tasks from teh API");
-  //     }
-  //   })
-  //   .catch((error) => console.log("Request failed ", error));
-  // };
-
-  const deleteAllTasks = () => {
-    fetch(apiUrlGet, {
-      method: 'PUT', // PUT para sobrescribir las tareas
-      body: JSON.stringify([]), // Enviar un array vacío para borrar todas las tareas
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-      .then((res) => {
-        if (res.ok) {
-          setTasks([]); // Limpiar las tareas en el estado local si la respuesta es exitosa
-          console.log("All tasks successfully deleted from the API");
-        } else {
-          console.log("Error deleting all tasks from the API", res.status, res.statusText);
-        }
-      })
-      .catch((error) => console.log("Request failed:", error));
-  };
   
-  
-
-  
-
   return (
     <div>
       <h1 className=" mx-5">TO DO LIST</h1>
@@ -144,11 +98,7 @@ const TodoList = () => {
             </li>
           ))}
         </ul>
-        {tasks.length > 0 && (
-          <button onClick={deleteAllTasks} className="btn btn-danger w-95 mt-3">
-            Delete all tasks
-          </button>
-        )}
+       
         <footer className="task-counter bg-light text-dark w-100 p-2 text-start mt-3">
           {tasks.length === 0
             ? "There are no pending tasks"
@@ -160,4 +110,6 @@ const TodoList = () => {
 };
 
 export default TodoList;
+
+
 
